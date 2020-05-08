@@ -137,8 +137,8 @@ add z0 z1 =
     , i = z0.i + z1.i
     }
 
-squaredNorm : Complex -> Float
-squaredNorm z =
+squaredModule : Complex -> Float
+squaredModule z =
     z.r * z.r + z.i * z.i
 
 -- MANDELBROT SET
@@ -146,18 +146,19 @@ squaredNorm z =
 iterationsAtPoint : Point -> Int
 iterationsAtPoint point =
     let 
-        z0 = { r = 0.0, i = 0.0}
-        c = {r = point.x, i = point.y} 
+        z0 = { r = 0.0, i = 0.0} -- z_0 = 0
+        c = {r = point.x, i = point.y} -- the point corresponding to the pixel being computed
     in
         mandelbrot z0 c 0
 
+-- Returns the number of iterations before diverging from the set (or reaching maxIter)
 mandelbrot : Complex -> Complex -> Int -> Int
 mandelbrot z c iter =
     if iter == maxIter then iter else
         let 
-            nextZ = squared z |> add c 
-            sqNorm = squaredNorm nextZ
+            nextZ = squared z |> add c -- z_(n+1) = z^2 + c
+            diverges = squaredModule nextZ > 4.0 -- Diverges if the module > 2
         in
-            if sqNorm >= 4.0 then iter else (mandelbrot nextZ c (iter+1))
+            if diverges then iter else (mandelbrot nextZ c (iter+1))
 
     
